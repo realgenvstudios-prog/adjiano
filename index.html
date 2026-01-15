@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="description" content="ADJIANO is a collection of images imagined, crafted through code, light, and emotion.">
+    <meta name="viewport" content="width=device-width, initial-scale=1,minimum-scale=1,maximum-scale=5">
+    <meta property="og:url" content="https://www.adjiano.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ADJIANO">
+    <meta property="og:description" content="ADJIANO is a collection of images imagined, crafted through code, light, and emotion.">
+    <meta property="og:site_name" content="ADJIANO">
+    <meta property="og:image" content="https://www.adjiano.com/ogp.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ADJIANO">
+    <meta name="twitter:description" content="ADJIANO is a collection of images imagined, crafted through code, light, and emotion.">
+    <meta name="twitter:image" content="https://www.adjiano.com/ogp.png">
+    <!-- <meta name="robots" content="noindex" /> -->
+    <link rel="canonical" href="https://adjiano.com/">
+    <meta name="generator" content="Astro v5.13.3">
+    <title>ADJIANO</title>
+    <link rel="stylesheet" href="css/_astro-_id_.BvWqV5aM.css">
+    <style>
+      #audio-player-container {
+        position: fixed;
+        bottom: 80px;
+        right: 24px;
+        z-index: 1000;
+      }
+      #audio-toggle {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50px;
+        background: rgba(238,238,238,0.95);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: width 0.3s, border-radius 0.3s, background 0.3s, padding 0.3s;
+        overflow: hidden;
+        padding: 0;
+      }
+      #audio-player-container.expanded #audio-toggle {
+        width: 220px;
+        border-radius: 24px;
+        background: rgba(238,238,238,0.98);
+        justify-content: flex-start;
+        padding-left: 0;
+      }
+      #audio-player-container.expanded #audio-toggle {
+        display: flex;
+        align-items: center;
+      }
+      #audio-icon {
+        flex-shrink: 0;
+        margin-right: 8px;
+        transition: margin 0.3s, opacity 0.3s;
+      }
+      #audio-player-container:not(.expanded) #audio-icon {
+        margin-right: 0;
+        opacity: 1;
+      }
+      #audio-player-container.expanded #audio-icon {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #audio-controls {
+        display: none;
+        flex: 1 1 auto;
+        width: 100%;
+        margin-left: 0;
+        background: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      #audio-player-container.expanded #audio-controls {
+        display: block;
+        width: 100%;
+      }
+      #main-audio {
+        width: 100%;
+        outline: none;
+        border: none;
+        background: none;
+        display: block;
+      }
+      #main-audio::-webkit-media-controls-enclosure {
+        overflow: hidden;
+      }
+      #main-audio::-webkit-media-controls-panel {
+        background: none;
+      }
+      #main-audio::-webkit-media-controls-download-button {
+        display: none !important;
+      }
+      #main-audio::-moz-media-controls-download-button {
+        display: none !important;
+      }
+      #main-audio::-ms-media-controls-download-button {
+        display: none !important;
+      }
+      #main-audio[controls]::part(download-button) {
+        display: none !important;
+      }
+      #music-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s;
+      }
+      #music-overlay .overlay-content {
+        background: rgba(255,255,255,0.95);
+        border-radius: 24px;
+        padding: 32px 40px;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      #music-overlay .overlay-content button {
+        background: #222;
+        color: #fff;
+        border: none;
+        border-radius: 50px;
+        padding: 12px 32px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        transition: background 0.2s;
+      }
+      #music-overlay .overlay-content button:hover {
+        background: #444;
+      }
+      @media (max-width: 600px) {
+        #audio-player-container {
+          bottom: 24px;
+          right: 12px;
+        }
+        #audio-toggle {
+          width: 44px;
+          height: 44px;
+          border-radius: 50px;
+          padding: 0;
+        }
+        #audio-player-container.expanded #audio-toggle {
+          width: 98vw;
+          min-width: 220px;
+          max-width: 100vw;
+          border-radius: 24px;
+          padding-left: 0;
+        }
+        #audio-controls {
+          width: 100%;
+          margin-left: 0;
+        }
+        #audio-player-container.expanded #audio-controls {
+          display: block;
+          width: 100%;
+        }
+        #main-audio {
+          width: 100%;
+          min-width: 180px;
+          max-width: 100vw;
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body data-barba="wrapper" aria-live="polite">
+    <div id="music-overlay">
+      <div class="overlay-content">
+        <div style="font-size:1.2rem;font-weight:500;">Start music to complement the visuals?</div>
+        <button id="start-music-btn">Play Music</button>
+        <div style="font-size:0.95rem;color:#666;">You can pause or mute anytime.</div>
+      </div>
+    </div>
+    <div id="audio-player-container">
+      <button id="audio-toggle" aria-label="Play music" title="Click to play/pause music">
+        <svg id="audio-icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="11" fill="#fff" stroke="#333" stroke-width="1.5"/>
+          <polygon id="play-icon" points="10,7 17,12 10,17" fill="#333"/>
+          <g id="pause-icon" style="display:none;">
+            <rect x="8" y="7" width="3" height="10" rx="1" fill="#333"/>
+            <rect x="13" y="7" width="3" height="10" rx="1" fill="#333"/>
+          </g>
+        </svg>
+      </button>
+      <div id="audio-controls-wrapper" style="display:none; position:absolute; bottom:50px; right:0; background:rgba(255,255,255,0.98); border-radius:12px; padding:8px; box-shadow:0 2px 12px rgba(0,0,0,0.15);">
+        <audio id="main-audio" src="audio/Water-No-Get-Enemy.mp3" loop controls controlslist="nodownload" style="width:200px;">
+          Your browser does not support the audio element.
+        </audio>
+      </div>
+    </div>
+    <script>
+      const audioPlayerContainer = document.getElementById('audio-player-container');
+      const audioToggle = document.getElementById('audio-toggle');
+      const audioControlsWrapper = document.getElementById('audio-controls-wrapper');
+      const mainAudio = document.getElementById('main-audio');
+      let isPlaying = false;
+      let controlsVisible = false;
+      const playIcon = document.getElementById('play-icon');
+      const pauseIcon = document.getElementById('pause-icon');
+      
+      function updatePlayerIcon() {
+        if (isPlaying) {
+          playIcon.style.display = 'none';
+          pauseIcon.style.display = 'block';
+          audioToggle.setAttribute('aria-label', 'Pause music');
+          audioToggle.setAttribute('title', 'Click to pause music');
+        } else {
+          playIcon.style.display = 'block';
+          pauseIcon.style.display = 'none';
+          audioToggle.setAttribute('aria-label', 'Play music');
+          audioToggle.setAttribute('title', 'Click to play music');
+        }
+      }
+      
+      function showControls() {
+        audioControlsWrapper.style.display = 'block';
+        controlsVisible = true;
+      }
+      
+      function hideControls() {
+        audioControlsWrapper.style.display = 'none';
+        controlsVisible = false;
+      }
+      
+      function playOrPauseMusic() {
+        if (mainAudio.paused) {
+          mainAudio.play();
+          isPlaying = true;
+        } else {
+          mainAudio.pause();
+          isPlaying = false;
+        }
+        updatePlayerIcon();
+      }
+      
+      // Listen for audio events to sync icon state
+      mainAudio.addEventListener('play', () => { isPlaying = true; updatePlayerIcon(); });
+      mainAudio.addEventListener('pause', () => { isPlaying = false; updatePlayerIcon(); });
+      
+      // Desktop: hover to show controls
+      audioPlayerContainer.addEventListener('mouseenter', showControls);
+      audioPlayerContainer.addEventListener('mouseleave', hideControls);
+      
+      // Click on button toggles play/pause
+      audioToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        playOrPauseMusic();
+      });
+      
+      // Mobile: double-tap to toggle controls, single-tap for play/pause
+      let lastTap = 0;
+      audioToggle.addEventListener('touchend', (e) => {
+        const currentTime = new Date().getTime();
+        const tapLength = currentTime - lastTap;
+        if (tapLength < 300 && tapLength > 0) {
+          // Double tap - toggle controls visibility
+          if (controlsVisible) hideControls();
+          else showControls();
+          e.preventDefault();
+        } else {
+          // Single tap - play/pause
+          playOrPauseMusic();
+        }
+        lastTap = currentTime;
+      });
+      
+      // Hide controls when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!audioPlayerContainer.contains(e.target) && controlsVisible) {
+          hideControls();
+        }
+      });
+      // Overlay logic
+      const musicOverlay = document.getElementById('music-overlay');
+      const startMusicBtn = document.getElementById('start-music-btn');
+      startMusicBtn.addEventListener('click', () => {
+        playOrPauseMusic();
+        musicOverlay.style.opacity = '0';
+        setTimeout(() => {
+          musicOverlay.style.display = 'none';
+          showControls();
+          setTimeout(() => {
+            hideControls();
+          }, 2000);
+        }, 300);
+      });
+    </script>
+    <div class="c-loading">
+      <div class="c-loading__box">
+        <div class="c-loading__icon" style="width:80px;">
+          <img src="images/images-leaf.svg" alt="">
+        </div>
+      </div>
+    </div>
+    <header class="l-header">
+      <div class="l-header__inner">
+        <h1 class="l-header__name">
+          <a href="index.html">ADJIANO</a>
+        </h1>
+      </div>
+    </header>
+    <button class="l-menu-button">
+      <span class="l-menu-button__line"></span>
+      <span class="l-menu-button__line"></span>
+    </button>
+    <div class="l-menu">
+      <div class="l-menu__inner">
+        <div class="l-menu__box">
+          <div class="l-menu__item">
+            <p class="title">Navigation</p>
+            <div class="links">
+              <a href="index.html" data-current="home">Home,</a>
+              <a href="bio.html" data-current="bio">Bio,</a>
+              <a href="mailto:hello@adjiano.com">Contact</a>
+            </div>
+          </div>
+          <div class="l-menu__item">
+            <p class="title">SNS</p>
+            <div class="links">
+              <a href="https://instagram.com/adjiano" target="_blank" style="display:inline-flex;align-items:center;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg"><path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5zm4.25 3.25a5.25 5.25 0 1 1 0 10.5a5.25 5.25 0 0 1 0-10.5zm0 1.5a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5zm5.25.75a1 1 0 1 1-2 0a1 1 0 0 1 2 0z"/></svg>
+              </a>
+            </div>
+          </div>
+          <div class="l-menu__item">
+            <p class="title">Think</p>
+            <p class="text">The art of what doesn't exist yet.</p>
+          </div>
+        </div>
+      </div>
+      <div class="l-menu__image">
+        <img src="images/images-menu-image.webp" alt="">
+      </div>
+    </div>
+    <div data-barba="container" data-barba-namespace="home">
+      <main class="main">
+        <div class="p-home">
+          <section class="p-home-grid-mode">
+            <div class="p-home-grid-mode__contents">
+              <a href="GenvModel1.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">1</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv1.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="high">
+                </div>
+              </a><a href="GenvModel2.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">2</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv2.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="high">
+                </div>
+              </a><a href="GenvModel3.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">3</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv3.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="high">
+                </div>
+              </a><a href="GenvModel4.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">4</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv4.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="high">
+                </div>
+              </a><a href="GenvModel5.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">5</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv5.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel6.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">6</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv6.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel7.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">7</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv7.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel8.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">8</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv8.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel9.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">9</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv9.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel10.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">10</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv10.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel11.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">11</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv11.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel12.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">12</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv12.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel13.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">13</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv13.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel14.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">14</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv14.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel15.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">15</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv15.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel16.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">16</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv16.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel17.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">17</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv17.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel18.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">18</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv18.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async" fetchpriority="low">
+                </div>
+              </a><a href="GenvModel19.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">19</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv19.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                </div>
+              </a><a href="GenvModel20.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">20</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv20.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                </div>
+              </a><a href="GenvModel21.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">21</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv21.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                </div>
+              </a><a href="GenvModel22.html" class="p-home-grid-mode__item">
+                <p class="p-home-grid-mode__item-num">22</p>
+                <div class="p-home-grid-mode__item-image">
+                  <img src="images/genv22.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                </div>
+              </a>
+            </div>
+            <div class="p-home-grid-mode__area" data-mobile-hide>
+              <div class="p-home-grid-mode__area-image" data-image-item>
+                <img src="images/genv1.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv2.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv3.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv4.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv5.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv6.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv7.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv8.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv9.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv10.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv11.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv12.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv13.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv14.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv15.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv16.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv17.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv18.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv19.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv20.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv21.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+                <img src="images/genv22.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              </div>
+              <p class="p-home-grid-mode__area-text">
+                <span>2025</span>
+                <span class="line"></span>
+                <span>2026</span>
+              </p>
+            </div>
+            <div class="p-home-grid-mode__full" data-mobile-hide>
+              <img src="images/genv1.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv2.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv3.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv4.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv5.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv6.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv7.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv8.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv9.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv10.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv11.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv12.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv13.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv14.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv15.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv16.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv17.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv18.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv19.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv20.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv21.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+              <img src="images/genv22.jpg" alt="photo thumbnail" width="200" height="300" loading="lazy" decoding="async">
+            </div>
+            <div id="canvas"></div>
+          </section>
+          <div class="p-home-view">
+            <button class="p-home-view__button is-current" data-grid-view>
+              <span>Grid</span>
+            </button>
+            <button class="p-home-view__button" data-list-view>
+              <span>Slider</span>
+            </button>
+            <div class="p-home-view__background"></div>
+          </div>
+          <p class="p-home-scroll">&darr;&#12288;ScrollDown</p>
+        </div>
+      </main>
+    </div>
+    <footer class="l-footer">
+      <small class="l-footer__copy">&copy; 2025 ADJIANO</small>
+    </footer>
+    <div id="webgl">
+      <div class="transition-text-cover" aria-hidden="true">
+        <p class="transition-text">Loading</p>
+        <img src="images/images-leaf.svg" alt="">
+      </div>
+    </div>
+    <script type="module" src="js/_astro-Layout.astro_astro_type_script_index_0_lang.Ct7m71T1.js"></script>
+  </body>
+</html>
