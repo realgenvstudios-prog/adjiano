@@ -27,81 +27,32 @@
         z-index: 1000;
       }
       #audio-toggle {
-        width: 40px;
-        height: 40px;
+        width: 44px;
+        height: 44px;
         border: none;
-        border-radius: 50px;
+        border-radius: 50%;
         background: rgba(238,238,238,0.95);
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        transition: width 0.3s, border-radius 0.3s, background 0.3s, padding 0.3s;
+        transition: background 0.3s, transform 0.2s;
         overflow: hidden;
         padding: 0;
       }
-      #audio-player-container.expanded #audio-toggle {
-        width: 220px;
-        border-radius: 24px;
-        background: rgba(238,238,238,0.98);
-        justify-content: flex-start;
-        padding-left: 0;
-      }
-      #audio-player-container.expanded #audio-toggle {
-        display: flex;
-        align-items: center;
+      #audio-toggle:hover {
+        background: rgba(255,255,255,1);
+        transform: scale(1.05);
       }
       #audio-icon {
         flex-shrink: 0;
-        margin-right: 8px;
-        transition: margin 0.3s, opacity 0.3s;
-      }
-      #audio-player-container:not(.expanded) #audio-icon {
-        margin-right: 0;
-        opacity: 1;
-      }
-      #audio-player-container.expanded #audio-icon {
-        opacity: 0;
-        pointer-events: none;
       }
       #audio-controls {
         display: none;
-        flex: 1 1 auto;
-        width: 100%;
-        margin-left: 0;
-        background: none;
-        box-shadow: none;
-        padding: 0;
-      }
-      #audio-player-container.expanded #audio-controls {
-        display: block;
-        width: 100%;
       }
       #main-audio {
-        width: 100%;
-        outline: none;
-        border: none;
-        background: none;
-        display: block;
-      }
-      #main-audio::-webkit-media-controls-enclosure {
-        overflow: hidden;
-      }
-      #main-audio::-webkit-media-controls-panel {
-        background: none;
-      }
-      #main-audio::-webkit-media-controls-download-button {
-        display: none !important;
-      }
-      #main-audio::-moz-media-controls-download-button {
-        display: none !important;
-      }
-      #main-audio::-ms-media-controls-download-button {
-        display: none !important;
-      }
-      #main-audio[controls]::part(download-button) {
-        display: none !important;
+        display: none;
       }
       #music-overlay {
         position: fixed;
@@ -143,33 +94,6 @@
           bottom: 24px;
           right: 12px;
         }
-        #audio-toggle {
-          width: 44px;
-          height: 44px;
-          border-radius: 50px;
-          padding: 0;
-        }
-        #audio-player-container.expanded #audio-toggle {
-          width: 98vw;
-          min-width: 220px;
-          max-width: 100vw;
-          border-radius: 24px;
-          padding-left: 0;
-        }
-        #audio-controls {
-          width: 100%;
-          margin-left: 0;
-        }
-        #audio-player-container.expanded #audio-controls {
-          display: block;
-          width: 100%;
-        }
-        #main-audio {
-          width: 100%;
-          min-width: 180px;
-          max-width: 100vw;
-          display: block;
-        }
       }
     </style>
   </head>
@@ -199,12 +123,9 @@
       </div>
     </div>
     <script>
-      const audioPlayerContainer = document.getElementById('audio-player-container');
       const audioToggle = document.getElementById('audio-toggle');
-      const audioControlsWrapper = document.getElementById('audio-controls-wrapper');
       const mainAudio = document.getElementById('main-audio');
       let isPlaying = false;
-      let controlsVisible = false;
       const playIcon = document.getElementById('play-icon');
       const pauseIcon = document.getElementById('pause-icon');
       
@@ -222,16 +143,6 @@
         }
       }
       
-      function showControls() {
-        audioControlsWrapper.style.display = 'block';
-        controlsVisible = true;
-      }
-      
-      function hideControls() {
-        audioControlsWrapper.style.display = 'none';
-        controlsVisible = false;
-      }
-      
       function playOrPauseMusic() {
         if (mainAudio.paused) {
           mainAudio.play();
@@ -247,39 +158,12 @@
       mainAudio.addEventListener('play', () => { isPlaying = true; updatePlayerIcon(); });
       mainAudio.addEventListener('pause', () => { isPlaying = false; updatePlayerIcon(); });
       
-      // Desktop: hover to show controls
-      audioPlayerContainer.addEventListener('mouseenter', showControls);
-      audioPlayerContainer.addEventListener('mouseleave', hideControls);
-      
-      // Click on button toggles play/pause
+      // Toggle play/pause on click
       audioToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         playOrPauseMusic();
       });
       
-      // Mobile: double-tap to toggle controls, single-tap for play/pause
-      let lastTap = 0;
-      audioToggle.addEventListener('touchend', (e) => {
-        const currentTime = new Date().getTime();
-        const tapLength = currentTime - lastTap;
-        if (tapLength < 300 && tapLength > 0) {
-          // Double tap - toggle controls visibility
-          if (controlsVisible) hideControls();
-          else showControls();
-          e.preventDefault();
-        } else {
-          // Single tap - play/pause
-          playOrPauseMusic();
-        }
-        lastTap = currentTime;
-      });
-      
-      // Hide controls when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!audioPlayerContainer.contains(e.target) && controlsVisible) {
-          hideControls();
-        }
-      });
       // Overlay logic
       const musicOverlay = document.getElementById('music-overlay');
       const startMusicBtn = document.getElementById('start-music-btn');
@@ -288,10 +172,6 @@
         musicOverlay.style.opacity = '0';
         setTimeout(() => {
           musicOverlay.style.display = 'none';
-          showControls();
-          setTimeout(() => {
-            hideControls();
-          }, 2000);
         }, 300);
       });
     </script>
